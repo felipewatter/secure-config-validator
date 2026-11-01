@@ -1,0 +1,48 @@
+name: Publish Secure Config Validator v1.1.0
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/release-v1.1.0.yml
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    name: Publish official v1.1.0 from validated commit
+    if: github.repository == 'felipewatter/secure-config-validator'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main and versioned release notes
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Verify previously tested commit and release notes
+        env:
+          RELEASE_COMMIT: 15f828ee7decefa0e1b6b4240ab974d8f1f47a10
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor "$RELEASE_COMMIT" HEAD
+          test -s .github/release-notes/v1.1.0.md
+          git show "$RELEASE_COMMIT:package.json" | grep -q '"version": "1.1.0"'
+
+      - name: Publish official stable release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_COMMIT: 15f828ee7decefa0e1b6b4240ab974d8f1f47a10
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh release view v1.1.0 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release v1.1.0 already exists; not replacing it."
+            exit 0
+          fi
+          gh release create v1.1.0 \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$RELEASE_COMMIT" \
+            --title "Secure Config Validator v1.1.0 — Security Hardening & Configuration Validation" \
+            --notes-file .github/release-notes/v1.1.0.md \
+            --latest
