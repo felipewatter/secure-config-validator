@@ -72,7 +72,7 @@ export function parseConfig(source:string,format:FileFormat):Entry[]{
   }
   try{
     const doc=YAML.parseDocument(source,{schema:'core',strict:true,uniqueKeys:true,version:'1.2'});
-    if(doc.errors.length||!doc.contents)throw Error('Invalid YAML document');
+    if(doc.errors.length||doc.warnings.length||!doc.contents)throw Error('Invalid YAML document');
     const root:unknown=doc.toJS({maxAliasCount:0});
     return flatten(root);
   }catch{throw Error('Invalid, unsupported or unsafe YAML document');}
