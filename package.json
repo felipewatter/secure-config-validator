@@ -1,6 +1,6 @@
 {
   "name": "secure-config-validator",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Offline, privacy-safe validation of .env, JSON and YAML security configurations",
   "license": "MIT",
   "author": "Felipe Watter",
