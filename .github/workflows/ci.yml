@@ -21,7 +21,7 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - name: Install with disabled lifecycle scripts
-        run: npm install --ignore-scripts --no-fund --no-audit
+        run: npm ci --ignore-scripts --no-fund --no-audit
       - name: Strict TypeScript verification
         run: npm run typecheck
       - name: Unit and CLI tests
